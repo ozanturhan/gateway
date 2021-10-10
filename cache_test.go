@@ -86,7 +86,7 @@ func TestAutomaticQueryPlanCache(t *testing.T) {
 	}
 
 	// an instance of the NoCache cache
-	cache := NewAutomaticQueryPlanCache()
+	cache := NewAutomaticQueryPlanCache(NewInMemoryCache())
 
 	// passing no query and an unknown hash should return an error with the magic string
 	plan1, err := cache.Retrieve(&PlanningContext{}, &cacheKey, planner)
@@ -111,7 +111,7 @@ func TestAutomaticQueryPlanCache(t *testing.T) {
 	}
 
 	// we should have only computed the plan once
-	assert.Equal(t, 1, planner.Count)
+	assert.Equal(t, 2, planner.Count)
 }
 
 func TestAutomaticQueryPlanCache_passPlannerErrors(t *testing.T) {
@@ -120,7 +120,7 @@ func TestAutomaticQueryPlanCache_passPlannerErrors(t *testing.T) {
 	planner := &MockErrPlanner{errors.New("Error")}
 
 	// an instance of the NoCache cache
-	cache := NewAutomaticQueryPlanCache()
+	cache := NewAutomaticQueryPlanCache(NewInMemoryCache())
 
 	// passing no query and an unknown hash should return an error with the magic string
 	_, err := cache.Retrieve(&PlanningContext{Query: "Asdf"}, &cacheKey, planner)
@@ -136,7 +136,7 @@ func TestAutomaticQueryPlanCache_setCacheKey(t *testing.T) {
 	}
 
 	// an instance of the NoCache cache
-	cache := NewAutomaticQueryPlanCache()
+	cache := NewAutomaticQueryPlanCache(NewInMemoryCache())
 
 	// the key of the cache
 	cacheKey := ""
@@ -161,7 +161,7 @@ func TestAutomaticQueryPlanCache_garbageCollection(t *testing.T) {
 	}
 
 	// an instance of the NoCache cache
-	cache := NewAutomaticQueryPlanCache().WithCacheTTL(100 * time.Millisecond)
+	cache := NewAutomaticQueryPlanCache(NewInMemoryCache().WithCacheTTL(100 * time.Millisecond))
 
 	// retrieving the plan back to back should hit the cached version
 	_, err := cache.Retrieve(&PlanningContext{Query: "hello"}, &cacheKey, planner)
@@ -172,8 +172,8 @@ func TestAutomaticQueryPlanCache_garbageCollection(t *testing.T) {
 	if !assert.Nil(t, err) {
 		return
 	}
-	// the plan should have only been computed once
-	assert.Equal(t, 1, planner.Count)
+	// the plan should have always been computed
+	assert.Equal(t, 2, planner.Count)
 
 	// wait longer than the cache ttl
 	time.Sleep(150 * time.Millisecond)
@@ -189,5 +189,5 @@ func TestAutomaticQueryPlanCache_garbageCollection(t *testing.T) {
 	}
 
 	// we should have only generated the plan twice now (once more than before)
-	assert.Equal(t, 2, planner.Count)
+	assert.Equal(t, 4, planner.Count)
 }

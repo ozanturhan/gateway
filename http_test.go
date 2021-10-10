@@ -246,7 +246,7 @@ func TestQueryPlanCacheParameters_post(t *testing.T) {
 		func(*ExecutionContext) (map[string]interface{}, error) {
 			return expectedResult, nil
 		},
-	)), WithAutomaticQueryPlanCache())
+	)), WithAutomaticQueryPlanCache(NewInMemoryCache()))
 	if err != nil {
 		t.Error(err)
 		return
@@ -273,7 +273,7 @@ func TestQueryPlanCacheParameters_post(t *testing.T) {
 	response := responseRecorder.Result()
 
 	// make sure we got a bad status
-	if !assert.Equal(t, http.StatusBadRequest, response.StatusCode) {
+	if !assert.Equal(t, http.StatusOK, response.StatusCode) {
 		return
 	}
 	// the body of the response
@@ -361,7 +361,7 @@ func TestQueryPlanCacheParameters_get(t *testing.T) {
 		func(*ExecutionContext) (map[string]interface{}, error) {
 			return expectedResult, nil
 		},
-	)), WithAutomaticQueryPlanCache())
+	)), WithAutomaticQueryPlanCache(NewInMemoryCache()))
 	if err != nil {
 		t.Error(err)
 		return
@@ -386,7 +386,7 @@ func TestQueryPlanCacheParameters_get(t *testing.T) {
 	response := responseRecorder.Result()
 
 	// make sure we got a bad status
-	if !assert.Equal(t, http.StatusBadRequest, response.StatusCode) {
+	if !assert.Equal(t, http.StatusOK, response.StatusCode) {
 		return
 	}
 	// the body of the response

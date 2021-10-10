@@ -3,6 +3,7 @@ module github.com/nautilus/gateway
 require (
 	github.com/99designs/gqlgen v0.13.0
 	github.com/agnivade/levenshtein v1.1.0 // indirect
+	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/nautilus/graphql v0.0.16
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
